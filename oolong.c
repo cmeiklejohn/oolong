@@ -12,7 +12,7 @@ const char TEST_DESC[] = "Get beers";
 typedef struct task {
   char *description;
   int completed;
-  int due_on;
+  int due;
 } task;
 
 typedef struct task_list {
