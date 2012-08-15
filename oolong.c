@@ -39,7 +39,7 @@ void seed_test_data(task_list *task_list) {
 
 int main(int argc, char *argv[]) {
   WINDOW *window;
-  int i, c, startx = 5, starty = 3, highlight = 0;
+  int i, c, quit = 0, startx = 5, starty = 3, highlight = 0;
   task_list task_list;
 
   seed_test_data(&task_list);
@@ -95,6 +95,12 @@ int main(int argc, char *argv[]) {
       } else {
         ++highlight;
       }
+      break;
+    case 'q':
+      quit = 1;
+    }
+
+    if (quit) {
       break;
     }
   }
