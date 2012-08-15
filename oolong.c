@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   keypad(window, TRUE);
 
   while(1) {
-    mvwprintw(window, starty, startx, "navigate: jk   add: a   complete: x   delete: d");
+    mvwprintw(window, starty, startx, "navigate: jk   quit: q");
     wclrtoeol(window);
 
     for(i = 0; i < task_list.today_size; i++) {
