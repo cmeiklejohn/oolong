@@ -15,7 +15,7 @@ typedef struct task {
   int due_on;
 } task;
 
-typedef struct task_list {
+typedef struct task_groups {
   int today_size;
   task **today;
 
@@ -24,25 +24,25 @@ typedef struct task_list {
 
   int completed_size;
   task **completed;
-} task_list;
+} task_groups;
 
-void seed_test_data(task_list *task_list) {
+void seed_test_data(task_groups *task_groups) {
   int i;
-  task_list->today_size = 7;
-  task_list->today = malloc(sizeof(task *) * task_list->today_size);
-  for (i = 0; i < task_list->today_size; i++) {
-    task_list->today[i] = malloc(sizeof(task));
-    task_list->today[i]->description = malloc(sizeof(char) * 255);
-    strncpy(task_list->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
+  task_groups->today_size = 7;
+  task_groups->today = malloc(sizeof(task *) * task_groups->today_size);
+  for (i = 0; i < task_groups->today_size; i++) {
+    task_groups->today[i] = malloc(sizeof(task));
+    task_groups->today[i]->description = malloc(sizeof(char) * 255);
+    strncpy(task_groups->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
   }
 }
 
 int main(int argc, char *argv[]) {
   WINDOW *window;
   int i, c, quit = 0, startx = 5, starty = 3, highlight = 0;
-  task_list task_list;
+  task_groups task_groups;
 
-  seed_test_data(&task_list);
+  seed_test_data(&task_groups);
 
   initscr();
   clear();
@@ -60,8 +60,8 @@ int main(int argc, char *argv[]) {
     mvwprintw(window, starty, startx, "TODOs ('c' to add, 'd' to remove)");
     wclrtoeol(window);
 
-    for(i = 0; i < task_list.today_size; i++) {
-      task *task = task_list.today[i];
+    for(i = 0; i < task_groups.today_size; i++) {
+      task *task = task_groups.today[i];
 
       if(highlight == i) {
         wattron(window, A_REVERSE);
@@ -83,14 +83,14 @@ int main(int argc, char *argv[]) {
     case KEY_UP:
     case 'k':
       if(highlight == 0) {
-        highlight = task_list.today_size - 1;
+        highlight = task_groups.today_size - 1;
       } else {
         --highlight;
       }
       break;
     case KEY_DOWN:
     case 'j':
-      if(highlight == task_list.today_size - 1) {
+      if(highlight == task_groups.today_size - 1) {
         highlight = 0;
       } else {
         ++highlight;
