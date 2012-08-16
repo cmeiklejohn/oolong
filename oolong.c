@@ -3,46 +3,30 @@
 #include <unistd.h>
 #include <string.h>
 #include <ncurses.h>
+#include "store.h"
 
 #define WIDTH 77
 #define HEIGHT 23
 
 const char TEST_DESC[] = "Get beers";
 
-typedef struct task {
-  char *description;
-  int completed;
-  int due;
-} task;
-
-typedef struct task_groups {
-  int today_size;
-  task **today;
-
-  int next_size;
-  task **next;
-
-  int completed_size;
-  task **completed;
-} task_groups;
-
-void seed_test_data(task_groups *task_groups) {
+void seed_test_data(task_grouping *task_grouping) {
   int i;
-  task_groups->today_size = 7;
-  task_groups->today = malloc(sizeof(task *) * task_groups->today_size);
-  for (i = 0; i < task_groups->today_size; i++) {
-    task_groups->today[i] = malloc(sizeof(task));
-    task_groups->today[i]->description = malloc(sizeof(char) * 255);
-    strncpy(task_groups->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
+  task_grouping->today_size = 7;
+  task_grouping->today = malloc(sizeof(task *) * task_grouping->today_size);
+  for (i = 0; i < task_grouping->today_size; i++) {
+    task_grouping->today[i] = malloc(sizeof(task));
+    task_grouping->today[i]->description = malloc(sizeof(char) * 255);
+    strncpy(task_grouping->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
   }
 }
 
 int main(int argc, char *argv[]) {
   WINDOW *window;
   int i, c, quit = 0, startx = 5, starty = 3, highlight = 0;
-  task_groups task_groups;
+  task_grouping task_grouping;
 
-  seed_test_data(&task_groups);
+  seed_test_data(&task_grouping);
 
   initscr();
   clear();
@@ -60,8 +44,8 @@ int main(int argc, char *argv[]) {
     mvwprintw(window, starty, startx, "navigate: jk   quit: q");
     wclrtoeol(window);
 
-    for(i = 0; i < task_groups.today_size; i++) {
-      task *task = task_groups.today[i];
+    for(i = 0; i < task_grouping.today_size; i++) {
+      task *task = task_grouping.today[i];
 
       if(highlight == i) {
         wattron(window, A_REVERSE);
@@ -83,14 +67,14 @@ int main(int argc, char *argv[]) {
     case KEY_UP:
     case 'k':
       if(highlight == 0) {
-        highlight = task_groups.today_size - 1;
+        highlight = task_grouping.today_size - 1;
       } else {
         --highlight;
       }
       break;
     case KEY_DOWN:
     case 'j':
-      if(highlight == task_groups.today_size - 1) {
+      if(highlight == task_grouping.today_size - 1) {
         highlight = 0;
       } else {
         ++highlight;

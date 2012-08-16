@@ -1,17 +1,11 @@
 #include <msgpack.h>
+#include "store.h"
 
 /* Provides a series of serialization and deserialization methods for
  * tasks using the messagepack serialization format.
  *
  * Author: Christopher Meiklejohn (christopher.meiklejohn@gmail.com)
  */
-
-/* Define the task stucture */
-typedef struct task {
-  char *description;
-  int completed;
-  int due;
-} task;
 
 /* Given a series of tasks, serialize into a series of array objects
  * using messagepack and return pointer to the buffer containing the
@@ -60,10 +54,10 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
   /* Every time we successfully unpack a task, realloc our tasks array
    * to hold the new member
    */
-  while(success = msgpack_unpack_next(&msg, sbuf->data, sbuf->size, &offset)) {
+  while((success = msgpack_unpack_next(&msg, sbuf->data, sbuf->size, &offset))) {
     /* Unpack the task and malloc the required memory */
     if((tasks = realloc(tasks, sizeof(task *) * (i + 1))) != NULL) {
-      if(tasks[i] = malloc(sizeof(task))) {
+      if((tasks[i] = malloc(sizeof(task)))) {
         obj = msg.data;
         arr = obj.via.array;
 
