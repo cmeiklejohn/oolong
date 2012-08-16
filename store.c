@@ -81,12 +81,42 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
 /* Given an array of tasks, group into appropriate groupings
  * for display.  Returns a pointer to the grouping object.
  */
-task_grouping *group(task_grouping *task_grouping, task **tasks);
+task_grouping *group(task_grouping *task_grouping, task **tasks) {
+  return task_grouping;
+}
 
 /* Given a task grouping, build a list of all of the tasks within
  * the grouping.
  */
-task **ungroup(task **tasks, task_grouping *task_grouping);
+task **ungroup(task **tasks, task_grouping *task_grouping) {
+  int i = 0, j = 0, size = 0;
+
+  size += task_grouping->today_size;
+  size += task_grouping->next_size;
+  size += task_grouping->completed_size;
+
+  /* Potential problem if we reallocate space containing pointers
+   * and don't free the pointers.
+   */
+  if((tasks = realloc(tasks, sizeof(task) * size))) {
+    for(j = 0; j < task_grouping->today_size; j++, i++) {
+      tasks[i] = task_grouping->today[j];
+    }
+
+    for(j = 0; j < task_grouping->next_size; j++, i++) {
+      tasks[i] = task_grouping->next[j];
+    }
+
+    for(j = 0; j < task_grouping->completed_size; j++, i++) {
+      tasks[i] = task_grouping->completed[j];
+    }
+
+    return tasks;
+  } else {
+    fprintf(stderr, "Cannot reallocate space.\n");
+    exit(EXIT_FAILURE);
+  }
+}
 
 /* Given a task grouping, regroup tasks.  Returns a pointer to the
  * grouping.
