@@ -43,10 +43,10 @@ msgpack_sbuffer *serialize(msgpack_sbuffer *sbuf, task **tasks, int size) {
  */
 task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
   int i = 0;
-  int len;
   bool success;
   size_t offset = 0;
   msgpack_object obj;
+  msgpack_object_raw raw;
   msgpack_object_array arr;
   msgpack_unpacked msg;
   msgpack_unpacked_init(&msg);
@@ -61,9 +61,9 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
         obj = msg.data;
         arr = obj.via.array;
 
-        len = arr.ptr[0].via.raw.size;
-        tasks[i]->description = malloc(len);
-        strncpy(tasks[i]->description, arr.ptr[0].via.raw.ptr, len);
+        raw = arr.ptr[0].via.raw;
+        tasks[i]->description = malloc(raw.size);
+        strncpy(tasks[i]->description, raw.ptr, raw.size);
         tasks[i]->completed = arr.ptr[1].via.i64;
         tasks[i]->due = arr.ptr[2].via.i64;
       }
