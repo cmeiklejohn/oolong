@@ -1,9 +1,17 @@
 CC=gcc
-CFLAGS=-g -Wall -ansi -pedantic
-LDFLAGS=-g -lncurses
+CFLAGS=-g -Wall -ansi -pedantic -c
+LDFLAGS=-g -lncurses -lmsgpack
+SOURCES=oolong.c
+OBJECTS=$(SOURCES:.c=.o)
+EXECUTABLE=oolong
 
-oolong: oolong.c
-	$(CC) $(CFLAGS) $(LDFLAGS) -o oolong oolong.c
+all: $(SOURCES) $(EXECUTABLE)
+
+$(EXECUTABLE): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm -rf oolong
+	rm -rf $(EXECUTABLE) $(OBJECTS)
