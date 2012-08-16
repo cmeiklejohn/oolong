@@ -91,7 +91,18 @@ task **ungroup(task **tasks, task_grouping *task_grouping);
 /* Given a task grouping, regroup tasks.  Returns a pointer to the
  * grouping.
  */
-task_grouping *regroup(task_grouping *task_grouping);
+task_grouping *regroup(task_grouping *task_grouping) {
+  task **tasks = NULL;
+
+  if(ungroup(tasks, task_grouping)) {
+    group(task_grouping, tasks);
+  } else {
+    fprintf(stderr, "Failed to reorganize tasks.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return task_grouping;
+}
 
 /* Given a messagepack sbuffer, write the contents to the disk.
  */
