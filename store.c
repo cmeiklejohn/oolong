@@ -1,8 +1,8 @@
 #include <msgpack.h>
 #include "store.h"
 
-/* Provides a series of serialization and deserialization methods for
- * tasks using the messagepack serialization format.
+/* Provides a series of serialization, deserialization and storage
+ * methods for tasks using the messagepack serialization format.
  *
  * Author: Christopher Meiklejohn (christopher.meiklejohn@gmail.com)
  */
@@ -74,3 +74,27 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
 
   return tasks;
 }
+
+/* Given an array of tasks, group into appropriate groupings
+ * for display.  Returns a pointer to the grouping object.
+ */
+task_grouping *group(task_grouping *task_grouping, task **tasks);
+
+/* Given a task grouping, build a list of all of the tasks within
+ * the grouping.
+ */
+task **ungroup(task **tasks, task_grouping *task_grouping);
+
+/* Given a task grouping, regroup tasks.  Returns a pointer to the
+ * grouping.
+ */
+task_grouping *regroup(task_grouping *task_grouping);
+
+/* Given a messagepack sbuffer, write the contents to the disk.
+ */
+msgpack_sbuffer *save(msgpack_sbuffer *sbuf);
+
+/* Given a messagepack sbuffer, load the contents of the object on
+ * disk into it.
+ */
+msgpack_sbuffer *load(msgpack_sbuffer *sbuf);
