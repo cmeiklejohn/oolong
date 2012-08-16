@@ -1,7 +1,7 @@
 CC=gcc
-CFLAGS=-g -Wall -ansi -pedantic -c
+CFLAGS=-g -Wall -pedantic -c
 LDFLAGS=-g -lncurses -lmsgpack
-SOURCES=oolong.c
+SOURCES=oolong.c store.c
 OBJECTS=$(SOURCES:.c=.o)
 EXECUTABLE=oolong
 
