@@ -67,6 +67,9 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
         tasks[i]->completed = arr.ptr[1].via.i64;
         tasks[i]->due = arr.ptr[2].via.i64;
       }
+    } else {
+      fprintf(stderr, "Cannot reallocate space.\n");
+      exit(EXIT_FAILURE);
     }
 
     i++;
