@@ -122,15 +122,6 @@ task **ungroup(task **tasks, task_grouping *task_grouping) {
  * grouping.
  */
 task_grouping *regroup(task_grouping *task_grouping) {
-  task **tasks = NULL;
-
-  if(ungroup(tasks, task_grouping)) {
-    group(task_grouping, tasks);
-  } else {
-    fprintf(stderr, "Failed to reorganize tasks.\n");
-    exit(EXIT_FAILURE);
-  }
-
   return task_grouping;
 }
 
