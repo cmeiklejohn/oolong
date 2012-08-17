@@ -1,4 +1,5 @@
 #include <msgpack.h>
+#include <time.h>
 #include "store.h"
 
 /* Provides a series of serialization, deserialization and storage
@@ -78,10 +79,38 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
   return tasks;
 }
 
+/* Given a list, and a task, add it and allocate appropriate memory. */
+task *group_individual(task **tasks, int *size, task *task) {
+  return task;
+}
+
 /* Given an array of tasks, group into appropriate groupings
  * for display.  Returns a pointer to the grouping object.
  */
-task_grouping *group(task_grouping *task_grouping, task **tasks) {
+task_grouping *group(task_grouping *task_grouping, task **tasks, int size) {
+  int i;
+  task *task;
+  time_t *curtime;
+
+  time(curtime);
+
+  for(i = 0; i < size; i++) {
+    task = tasks[i];
+
+    if(task->completed) {
+      /* If the task has been completed, dump into the completed list */
+      group_individual(task_grouping->completed, &task_grouping->completed_size, task);
+    } else if(task->due < *curtime + 86400){
+      /* If the task is due within the next 86400 seconds, assume it's
+       * due today or overdue.
+       */
+      group_individual(task_grouping->today, &task_grouping->today_size, task);
+    } else {
+      /* Else, assume it's due in the future */
+      group_individual(task_grouping->next, &task_grouping->next_size, task);
+    }
+  }
+
   return task_grouping;
 }
 
