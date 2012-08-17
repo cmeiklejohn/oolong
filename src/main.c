@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <ncurses.h>
-#include "store.h"
+#include "oolong.h"
 
 #define WIDTH 77
 #define HEIGHT 23

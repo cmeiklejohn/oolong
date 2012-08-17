@@ -1,6 +1,6 @@
 #include <msgpack.h>
 #include <time.h>
-#include "store.h"
+#include "oolong.h"
 
 /* Provides a series of serialization, deserialization and storage
  * methods for tasks using the messagepack serialization format.
