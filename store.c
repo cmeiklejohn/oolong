@@ -127,7 +127,7 @@ task **ungroup(task **tasks, task_grouping *task_grouping) {
   /* Potential problem if we reallocate space containing pointers
    * and don't free the pointers.
    */
-  if((tasks = realloc(tasks, sizeof(task) * size))) {
+  if((tasks = realloc(tasks, sizeof(task *) * size))) {
     for(j = 0; j < task_grouping->today_size; j++, i++) {
       tasks[i] = task_grouping->today[j];
     }
