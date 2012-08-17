@@ -3,7 +3,7 @@
 
 typedef struct task {
   char *description;
-  int completed;
+  time_t completed;
   int due;
 } task;
 
