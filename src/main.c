@@ -11,12 +11,12 @@
 
 const char TEST_DESC[] = "Get beers";
 
-void seed_test_data(task_grouping *task_grouping) {
+void seed_test_data(oolong_task_grouping *task_grouping) {
   int i;
   task_grouping->today_size = 7;
-  task_grouping->today = malloc(sizeof(task *) * task_grouping->today_size);
+  task_grouping->today = malloc(sizeof(oolong_task *) * task_grouping->today_size);
   for (i = 0; i < task_grouping->today_size; i++) {
-    task_grouping->today[i] = malloc(sizeof(task));
+    task_grouping->today[i] = malloc(sizeof(oolong_task));
     task_grouping->today[i]->description = malloc(sizeof(char) * 255);
     strncpy(task_grouping->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
   }
@@ -25,7 +25,7 @@ void seed_test_data(task_grouping *task_grouping) {
 int main(int argc, char *argv[]) {
   WINDOW *window;
   int i, c, quit = 0, startx = 5, starty = 3, highlight = 0;
-  task_grouping task_grouping;
+  oolong_task_grouping task_grouping;
 
   seed_test_data(&task_grouping);
 
@@ -46,7 +46,7 @@ int main(int argc, char *argv[]) {
     wclrtoeol(window);
 
     for(i = 0; i < task_grouping.today_size; i++) {
-      task *task = task_grouping.today[i];
+      oolong_task *task = task_grouping.today[i];
 
       if(highlight == i) {
         wattron(window, A_REVERSE);

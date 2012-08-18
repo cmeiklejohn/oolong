@@ -12,9 +12,10 @@
  * using messagepack and return pointer to the buffer containing the
  * serialized data
  */
-msgpack_sbuffer *serialize(msgpack_sbuffer *sbuf, task **tasks, int size) {
+msgpack_sbuffer *
+oolong_serialize(msgpack_sbuffer *sbuf, oolong_task **tasks, int size) {
   int i;
-  task *task;
+  oolong_task *task;
   msgpack_packer *pk = msgpack_packer_new(sbuf, msgpack_sbuffer_write);
 
   for(i = 0; i < size; i++) {
@@ -42,7 +43,8 @@ msgpack_sbuffer *serialize(msgpack_sbuffer *sbuf, task **tasks, int size) {
 /* Given a messagepack buffer, unpack task structs and return pointer
  * to the list of unpacked tasks.
  */
-task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
+oolong_task **
+oolong_deserialize(oolong_task **tasks, msgpack_sbuffer *sbuf) {
   int i = 0;
   bool success;
   size_t offset = 0;
@@ -57,8 +59,8 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
    */
   while((success = msgpack_unpack_next(&msg, sbuf->data, sbuf->size, &offset))) {
     /* Unpack the task and malloc the required memory */
-    if((tasks = realloc(tasks, sizeof(task *) * (i + 1))) != NULL) {
-      if((tasks[i] = malloc(sizeof(task)))) {
+    if((tasks = realloc(tasks, sizeof(oolong_task *) * (i + 1))) != NULL) {
+      if((tasks[i] = malloc(sizeof(oolong_task)))) {
         obj = msg.data;
         arr = obj.via.array;
 
@@ -80,16 +82,18 @@ task **deserialize(task **tasks, msgpack_sbuffer *sbuf) {
 }
 
 /* Given a list, and a task, add it and allocate appropriate memory. */
-task *group_individual(task **tasks, int *size, task *task) {
+oolong_task *
+oolong_group_individual(oolong_task **tasks, int *size, oolong_task *task) {
   return task;
 }
 
 /* Given an array of tasks, group into appropriate groupings
  * for display.  Returns a pointer to the grouping object.
  */
-task_grouping *group(task_grouping *task_grouping, task **tasks, int size) {
+oolong_task_grouping *
+oolong_group(oolong_task_grouping *task_grouping, oolong_task **tasks, int size) {
   int i;
-  task *task;
+  oolong_task *task;
   time_t *curtime;
 
   time(curtime);
@@ -99,15 +103,15 @@ task_grouping *group(task_grouping *task_grouping, task **tasks, int size) {
 
     if(task->completed) {
       /* If the task has been completed, dump into the completed list */
-      group_individual(task_grouping->completed, &task_grouping->completed_size, task);
+      oolong_group_individual(task_grouping->completed, &task_grouping->completed_size, task);
     } else if(task->due < *curtime + 86400){
       /* If the task is due within the next 86400 seconds, assume it's
        * due today or overdue.
        */
-      group_individual(task_grouping->today, &task_grouping->today_size, task);
+      oolong_group_individual(task_grouping->today, &task_grouping->today_size, task);
     } else {
       /* Else, assume it's due in the future */
-      group_individual(task_grouping->next, &task_grouping->next_size, task);
+      oolong_group_individual(task_grouping->next, &task_grouping->next_size, task);
     }
   }
 
@@ -117,7 +121,8 @@ task_grouping *group(task_grouping *task_grouping, task **tasks, int size) {
 /* Given a task grouping, build a list of all of the tasks within
  * the grouping.
  */
-task **ungroup(task **tasks, task_grouping *task_grouping) {
+oolong_task **
+oolong_ungroup(oolong_task **tasks, oolong_task_grouping *task_grouping) {
   int i = 0, j = 0, size = 0;
 
   size += task_grouping->today_size;
@@ -127,7 +132,7 @@ task **ungroup(task **tasks, task_grouping *task_grouping) {
   /* Potential problem if we reallocate space containing pointers
    * and don't free the pointers.
    */
-  if((tasks = realloc(tasks, sizeof(task *) * size))) {
+  if((tasks = realloc(tasks, sizeof(oolong_task *) * size))) {
     for(j = 0; j < task_grouping->today_size; j++, i++) {
       tasks[i] = task_grouping->today[j];
     }
@@ -150,15 +155,18 @@ task **ungroup(task **tasks, task_grouping *task_grouping) {
 /* Given a task grouping, regroup tasks.  Returns a pointer to the
  * grouping.
  */
-task_grouping *regroup(task_grouping *task_grouping) {
+oolong_task_grouping *
+regroup(oolong_task_grouping *task_grouping) {
   return task_grouping;
 }
 
 /* Given a messagepack sbuffer, write the contents to the disk.
  */
-msgpack_sbuffer *save(msgpack_sbuffer *sbuf);
+msgpack_sbuffer *
+oolong_save(msgpack_sbuffer *sbuf);
 
 /* Given a messagepack sbuffer, load the contents of the object on
  * disk into it.
  */
-msgpack_sbuffer *load(msgpack_sbuffer *sbuf);
+msgpack_sbuffer *
+oolong_load(msgpack_sbuffer *sbuf);
