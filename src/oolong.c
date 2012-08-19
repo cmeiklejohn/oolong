@@ -184,6 +184,14 @@ oolong_ungroup(oolong_task **tasks, oolong_task_grouping *task_grouping) {
  */
 oolong_task_grouping *
 regroup(oolong_task_grouping *task_grouping) {
+  oolong_task **tasks = NULL;
+
+  if((tasks = oolong_ungroup(tasks, task_grouping))) {
+    task_grouping = oolong_group(task_grouping, tasks, sizeof(tasks) / sizeof(oolong_task *));
+  } else {
+    fprintf(stderr, "Cannot regroup tasks.");
+  }
+
   return task_grouping;
 }
 
