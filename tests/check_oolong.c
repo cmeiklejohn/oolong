@@ -40,7 +40,6 @@ START_TEST(test_group_and_ungroup) {
   tasks = seed_tasks(tasks, size);
   task_grouping = oolong_group(task_grouping, tasks, size);
 
-  printf("%d %d", task_grouping->completed_size, size);
   fail_unless(task_grouping->completed_size == size);
 
   for(i = 0; i < size; i++) {
