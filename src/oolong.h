@@ -26,8 +26,11 @@ oolong_serialize(msgpack_sbuffer *sbuf, oolong_task **tasks, int size);
 oolong_task **
 oolong_deserialize(oolong_task **tasks, msgpack_sbuffer *sbuf);
 
-oolong_task *
+oolong_task **
 oolong_group_individual(oolong_task **tasks, int *size, oolong_task *task);
+
+oolong_task_grouping *
+oolong_create_grouping(oolong_task_grouping *task_grouping);
 
 oolong_task_grouping *
 oolong_group(oolong_task_grouping *task_grouping, oolong_task **tasks, int size);

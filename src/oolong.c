@@ -82,9 +82,36 @@ oolong_deserialize(oolong_task **tasks, msgpack_sbuffer *sbuf) {
 }
 
 /* Given a list, and a task, add it and allocate appropriate memory. */
-oolong_task *
+oolong_task **
 oolong_group_individual(oolong_task **tasks, int *size, oolong_task *task) {
-  return task;
+  if((tasks = realloc(tasks, sizeof(oolong_task *) * (*size + 1)))) {
+    tasks[*size] = task;
+    (*size)++;
+  } else {
+    fprintf(stderr, "Cannot reallocate space.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return tasks;
+}
+
+/* Initialize a new task grouping. */
+oolong_task_grouping *
+oolong_create_grouping(oolong_task_grouping *task_grouping) {
+  if((task_grouping = malloc(sizeof(oolong_task_grouping)))) {
+    task_grouping->completed = NULL;
+    task_grouping->today = NULL;
+    task_grouping->next = NULL;
+
+    task_grouping->completed_size = 0;
+    task_grouping->today_size = 0;
+    task_grouping->next_size = 0;
+  } else {
+    fprintf(stderr, "Cannot allocate space.\n");
+    exit(EXIT_FAILURE);
+  }
+
+  return task_grouping;
 }
 
 /* Given an array of tasks, group into appropriate groupings
@@ -94,24 +121,24 @@ oolong_task_grouping *
 oolong_group(oolong_task_grouping *task_grouping, oolong_task **tasks, int size) {
   int i;
   oolong_task *task;
-  time_t *curtime;
+  time_t curtime;
 
-  time(curtime);
+  time(&curtime);
 
   for(i = 0; i < size; i++) {
     task = tasks[i];
 
     if(task->completed) {
       /* If the task has been completed, dump into the completed list */
-      oolong_group_individual(task_grouping->completed, &task_grouping->completed_size, task);
-    } else if(task->due < *curtime + 86400){
+      task_grouping->completed = oolong_group_individual(task_grouping->completed, &task_grouping->completed_size, task);
+    } else if(task->due < curtime + 86400){
       /* If the task is due within the next 86400 seconds, assume it's
        * due today or overdue.
        */
-      oolong_group_individual(task_grouping->today, &task_grouping->today_size, task);
+      task_grouping->today = oolong_group_individual(task_grouping->today, &task_grouping->today_size, task);
     } else {
       /* Else, assume it's due in the future */
-      oolong_group_individual(task_grouping->next, &task_grouping->next_size, task);
+      task_grouping->next = oolong_group_individual(task_grouping->next, &task_grouping->next_size, task);
     }
   }
 
