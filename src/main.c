@@ -18,8 +18,9 @@ char *NEXT_LABEL = "NEXT";
 char *COMPLETED_LABEL = "COMPLETED";
 const char TEST_DESC[] = "Get beers";
 
-void seed_test_data(oolong_task_grouping *task_grouping) {
+oolong_task_grouping *seed_test_data(oolong_task_grouping *task_grouping) {
   int i;
+  task_grouping = oolong_create_grouping(task_grouping);
   task_grouping->today_size = 7;
   task_grouping->today = malloc(sizeof(oolong_task *) * task_grouping->today_size);
   for (i = 0; i < task_grouping->today_size; i++) {
@@ -27,6 +28,8 @@ void seed_test_data(oolong_task_grouping *task_grouping) {
     task_grouping->today[i]->description = malloc(sizeof(char) * 255);
     strncpy(task_grouping->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
   }
+
+  return task_grouping;
 }
 
 /* print tasks and groups */
@@ -65,9 +68,9 @@ int print_task_groupings(WINDOW *window, int y, int x, oolong_task_grouping *gro
 int main(int argc, char *argv[]) {
   WINDOW *window;
   int i, c, quit = 0, startx = 5, starty = 3, highlight = 0;
-  oolong_task_grouping task_grouping;
+  oolong_task_grouping *task_grouping = NULL;
 
-  seed_test_data(&task_grouping);
+  task_grouping = seed_test_data(task_grouping);
 
   initscr();
   clear();
@@ -83,7 +86,7 @@ int main(int argc, char *argv[]) {
 
   // run loop
   while(1) {
-    print_task_groupings(window, starty, startx, &task_grouping);
+    print_task_groupings(window, starty, startx, task_grouping);
 
     mvwprintw(window, starty + 21, startx, "navigate: jk   quit: q");
     wclrtoeol(window);
@@ -95,14 +98,14 @@ int main(int argc, char *argv[]) {
     case KEY_UP:
     case 'k':
       if(highlight == 0) {
-        highlight = task_grouping.today_size - 1;
+        highlight = task_grouping->today_size - 1;
       } else {
         --highlight;
       }
       break;
     case KEY_DOWN:
     case 'j':
-      if(highlight == task_grouping.today_size - 1) {
+      if(highlight == task_grouping->today_size - 1) {
         highlight = 0;
       } else {
         ++highlight;
