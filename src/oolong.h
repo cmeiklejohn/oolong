@@ -39,7 +39,10 @@ oolong_task **
 oolong_ungroup(oolong_task **tasks, oolong_task_grouping *task_grouping);
 
 oolong_task_grouping *
-regroup(oolong_task_grouping *task_grouping);
+oolong_regroup(oolong_task_grouping *task_grouping);
+
+oolong_task **
+oolong_add_task(oolong_task **tasks, int *size, oolong_task *task);
 
 msgpack_sbuffer *
 oolong_save(msgpack_sbuffer *sbuf);

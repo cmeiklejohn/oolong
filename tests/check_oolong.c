@@ -57,6 +57,30 @@ START_TEST(test_group_and_ungroup) {
   }
 } END_TEST
 
+/* Test adding a task */
+START_TEST(test_creation) {
+  int size = 10;
+  oolong_task **tasks = NULL;
+  oolong_task *task = NULL;
+  oolong_task_grouping *task_grouping = NULL;
+
+  task = malloc(sizeof(oolong_task));
+  task->description = malloc(sizeof(char) * 4);
+  strcpy(task->description, "New");
+  task->completed = 1;
+  task->due = 1000;
+
+  task_grouping = oolong_create_grouping(task_grouping);
+  tasks = seed_tasks(tasks, size);
+  task_grouping = oolong_group(task_grouping, tasks, size);
+  task_grouping->completed = oolong_add_task(task_grouping->completed, &task_grouping->completed_size, task);
+
+  fail_unless(task_grouping->completed_size == (size + 1));
+  fail_unless(strcmp(task_grouping->completed[size]->description, "New") == 0);
+  fail_unless(task_grouping->completed[size]->due == 1000);
+  fail_unless(task_grouping->completed[size]->completed == 1);
+} END_TEST
+
 /* Create a bunch of data, serialize and deserialize. */
 START_TEST(test_serialize_and_deserialize) {
   int i, size = 10;
@@ -86,6 +110,10 @@ oolong_suite(void) {
   TCase *tc_grouping = tcase_create("Grouping");
   tcase_add_test(tc_grouping, test_group_and_ungroup);
   suite_add_tcase(s, tc_grouping);
+
+  TCase *tc_creation = tcase_create("Creation");
+  tcase_add_test(tc_creation, test_creation);
+  suite_add_tcase(s, tc_creation);
 
   return s;
 }

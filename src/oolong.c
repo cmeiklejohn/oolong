@@ -183,16 +183,30 @@ oolong_ungroup(oolong_task **tasks, oolong_task_grouping *task_grouping) {
  * grouping.
  */
 oolong_task_grouping *
-regroup(oolong_task_grouping *task_grouping) {
+oolong_regroup(oolong_task_grouping *task_grouping) {
   oolong_task **tasks = NULL;
 
   if((tasks = oolong_ungroup(tasks, task_grouping))) {
     task_grouping = oolong_group(task_grouping, tasks, sizeof(tasks) / sizeof(oolong_task *));
   } else {
     fprintf(stderr, "Cannot regroup tasks.");
+    exit(EXIT_FAILURE);
   }
 
   return task_grouping;
+}
+
+oolong_task **
+oolong_add_task(oolong_task **tasks, int *size, oolong_task *task) {
+  if((tasks = realloc(tasks, ((*size) + 1) * sizeof(oolong_task *)))) {
+    tasks[*size] = task;
+    (*size)++;
+  } else {
+    fprintf(stderr, "Cannot reallocate tasks.");
+    exit(EXIT_FAILURE);
+  }
+
+  return tasks;
 }
 
 /* Given a messagepack sbuffer, write the contents to the disk.
