@@ -9,6 +9,13 @@
 #define WIDTH 77
 #define HEIGHT 23
 
+#define MAX_WIDTH 80
+#define MAX_HEIGHT 24
+#define MARGIN 2
+
+char *TODAY_LABEL = "TODAY";
+char *NEXT_LABEL = "NEXT";
+char *COMPLETED_LABEL = "COMPLETED";
 const char TEST_DESC[] = "Get beers";
 
 void seed_test_data(oolong_task_grouping *task_grouping) {
@@ -20,6 +27,39 @@ void seed_test_data(oolong_task_grouping *task_grouping) {
     task_grouping->today[i]->description = malloc(sizeof(char) * 255);
     strncpy(task_grouping->today[i]->description, TEST_DESC, sizeof(TEST_DESC));
   }
+}
+
+/* print tasks and groups */
+
+int print_task(WINDOW *window, int y, int x, char *description, int i) {
+  //wattron(window, A_REVERSE);
+  //mvwprintw(window, y, x, "%d. %s", i + 1, description);
+  //wattroff(window, A_REVERSE);
+   
+  mvwprintw(window, y, x, "%d. %s", i + 1, description);
+
+  wclrtoeol(window);
+
+  return 0;
+}
+
+int print_task_grouping(WINDOW *window, int y, int x, oolong_task **tasks, int tasks_size, char *label) {
+  int i;
+  
+  mvwprintw(window, y, x, label);
+  wclrtoeol(window);
+  for(i = 0; i < tasks_size; i++) {
+    oolong_task *task = tasks[i];
+    print_task(window, y + (i + 2), x, task->description, i);
+  }
+
+  return 0;
+}
+
+int print_task_groupings(WINDOW *window, int y, int x, oolong_task_grouping *grouping) {
+  print_task_grouping(window, y, x, grouping->today, grouping->today_size, TODAY_LABEL);
+  print_task_grouping(window, y + grouping->today_size + MARGIN + 1, x, grouping->completed, grouping->completed_size, COMPLETED_LABEL);
+  print_task_grouping(window, y, x + 40, grouping->next, grouping->next_size, NEXT_LABEL);
 }
 
 int main(int argc, char *argv[]) {
@@ -41,26 +81,13 @@ int main(int argc, char *argv[]) {
   window = newwin(HEIGHT, WIDTH, starty, startx);
   keypad(window, TRUE);
 
+  // run loop
   while(1) {
-    mvwprintw(window, starty, startx, "navigate: jk   quit: q");
+    print_task_groupings(window, starty, startx, &task_grouping);
+
+    mvwprintw(window, starty + 21, startx, "navigate: jk   quit: q");
     wclrtoeol(window);
-
-    for(i = 0; i < task_grouping.today_size; i++) {
-      oolong_task *task = task_grouping.today[i];
-
-      if(highlight == i) {
-        wattron(window, A_REVERSE);
-        mvwprintw(window, starty + (i + 2), startx, "%d. %s", i + 1, task->description);
-        wattroff(window, A_REVERSE);
-      } else {
-        mvwprintw(window, starty + (i + 2), startx, "%d. %s", i + 1, task->description);
-      }
-
-      wclrtoeol(window);
-    }
-
     wclrtobot(window);
-
     wrefresh(window);
 
     c = wgetch(window);
